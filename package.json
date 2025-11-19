@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "postinstall": "npx playwright install chromium"
+    "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "playwright": "^1.47.2"
+    "puppeteer": "^23.6.0"
   }
 }
