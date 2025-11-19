@@ -1,30 +1,17 @@
-import express from "express";
-import { chromium } from "playwright";
+import fetch from "node-fetch";
 
-const app = express();
-
-app.get("/menu", async (req, res) => {
+export default async function handler(req, res) {
   try {
-    const browser = await chromium.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    const response = await fetch("https://msuranie.cz/jidelni-listek/", {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept": "text/html",
+      },
     });
-    const page = await browser.newPage();
-    await page.goto("https://msuranie.cz/jidelni-listek/", {
-      waitUntil: "networkidle"
-    });
 
-    // počkej chvíli, než JS vygeneruje jídelníček
-    await page.waitForTimeout(2000);
-
-    const text = await page.locator("div.entry-content").innerText();
-    await browser.close();
-
-    res.json({ menu: text });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    const html = await response.text();
+    res.status(200).json({ html: html.slice(0, 2000) }); // pošli prvních 2000 znaků
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server běží na portu ${PORT}`));
+}
